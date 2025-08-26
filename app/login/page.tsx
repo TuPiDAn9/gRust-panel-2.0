@@ -18,7 +18,6 @@ export default function LoginPage() {
       // After successful login, redirect to home page
       await signIn('steam', { callbackUrl: '/' })
     } catch (error) {
-      console.error('Steam login error:', error)
       setIsLoading(false)
     }
   }

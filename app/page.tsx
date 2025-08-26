@@ -5,6 +5,8 @@ import { Header } from "@/components/header";
 import { getServerSession } from 'next-auth';
 import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
+import { StatsChart } from "@/components/stats-chart-bars";
+import { ChartProvider } from "@/components/chart-provider";
 
 export default async function Home() {
   const session = await getServerSession(authOptions());
@@ -19,7 +21,7 @@ export default async function Home() {
       <Header />
       <main className="container py-4">
         <div className="max-w-4xl px-4">
-          help
+          <StatsChart />
         </div>
       </main>
     </div>

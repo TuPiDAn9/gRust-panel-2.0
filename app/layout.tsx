@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import SessionProviderWrapper from "@/components/session-provider";
 import { getServerSession } from 'next-auth';
 import { authOptions } from "@/auth";
+import { Toaster } from "@/components/ui/sonner";
+import { ChartProvider } from "@/components/chart-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,14 +37,17 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProviderWrapper session={session}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <ChartProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </ChartProvider>
         </SessionProviderWrapper>
       </body>
     </html>
