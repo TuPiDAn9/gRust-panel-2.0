@@ -24,8 +24,8 @@
   --input: oklch(0.9276 0.0058 264.5313);
   --ring: oklch(0.6231 0.1880 259.8145);
   --chart-1: oklch(0.6231 0.1880 259.8145);
-  --chart-2: oklch(0.5461 0.2152 262.8809);
-  --chart-3: oklch(0.4882 0.2172 264.3763);
+  --chart-2: oklch(60.367% 0.22885 27.61);
+  --chart-3: oklch(76.687% 0.25222 142.633);
   --chart-4: oklch(0.4244 0.1809 265.6377);
   --chart-5: oklch(0.3791 0.1378 265.5222);
   --sidebar: oklch(0.9846 0.0017 247.8389);
@@ -73,8 +73,8 @@
   --input: oklch(0.3715 0 0);
   --ring: oklch(0.6231 0.1880 259.8145);
   --chart-1: oklch(0.7137 0.1434 254.6240);
-  --chart-2: oklch(0.6231 0.1880 259.8145);
-  --chart-3: oklch(0.5461 0.2152 262.8809);
+  --chart-2: oklch(63.981% 0.22264 26.199);
+  --chart-3: oklch(82.941% 0.2516 139.29);
   --chart-4: oklch(0.4882 0.2172 264.3763);
   --chart-5: oklch(0.4244 0.1809 265.6377);
   --sidebar: oklch(0.2046 0 0);
@@ -161,6 +161,37 @@
 
 body {
   letter-spacing: var(--tracking-normal);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes spin-left {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-spin-left {
+  animation: spin-left 0.6s ease-in-out;
+}
+
+@keyframes infinite-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-1008px); /* 3 карточки * 336px (320px + 16px gap) */
+  }
 }
 
 @layer base {

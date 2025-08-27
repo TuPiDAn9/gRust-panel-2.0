@@ -7,6 +7,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { ChartProvider } from "@/components/chart-provider";
+import { Header } from "@/components/header"; // Добавьте импорт
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: { default: "gRust", template: "%s | gRust Panel"},
+  title: { default: "gRust Panel", template: "%s | Panel"},
   description: "An admin panel for gRust",
   authors: [{ name: "TuPiDAn", url: "https://tupidan.ru" }],
 };
@@ -36,6 +37,9 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Header остается на серверном уровне */}
+        <Header />
+        
         <SessionProviderWrapper session={session}>
           <ChartProvider>
             <ThemeProvider

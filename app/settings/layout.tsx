@@ -1,5 +1,3 @@
-import { Header } from "@/components/header";
-
 export default function SettingsLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function SettingsLayout({
 }) {
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       <main className="container py-4">{children}</main>
     </div>
   );
