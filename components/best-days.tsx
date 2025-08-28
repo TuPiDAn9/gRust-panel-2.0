@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useChart } from './chart-provider'
@@ -26,16 +27,16 @@ export function BestDaysCard() {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Best Days</CardTitle>
+          <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {[...Array(6)].map((_, index) => (
-            <div key={index} className="p-4 bg-muted/30 border rounded-lg">
+            <div key={index} className="p-3 md:p-4 bg-muted/30 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <div className="h-5 bg-muted animate-pulse rounded w-40" />
-                <div className="h-5 bg-muted animate-pulse rounded w-32" />
+                <div className="h-4 md:h-5 bg-muted animate-pulse rounded w-32 md:w-40" />
+                <div className="h-4 md:h-5 bg-muted animate-pulse rounded w-24 md:w-32" />
               </div>
-              <div className="h-4 bg-muted animate-pulse rounded w-24" />
+              <div className="h-3 md:h-4 bg-muted animate-pulse rounded w-20 md:w-24" />
             </div>
           ))}
         </CardContent>
@@ -47,7 +48,7 @@ export function BestDaysCard() {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Best Days</CardTitle>
+          <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center min-h-[200px] gap-4">
           <p className="text-red-500 text-center text-sm">{error}</p>
@@ -75,7 +76,7 @@ export function BestDaysCard() {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Best Days</CardTitle>
+          <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
         </CardHeader>
         <CardContent className="py-8">
           <p className="text-muted-foreground text-center text-sm">
@@ -89,18 +90,18 @@ export function BestDaysCard() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Best Days</CardTitle>
+        <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 md:space-y-3">
         {bestDaysToShow.map((bestDay) => (
           <Tooltip key={bestDay.date}>
             <TooltipTrigger asChild>
-              <div className="p-4 bg-card border rounded-lg hover:bg-muted/30 transition-colors">
+              <div className="p-3 md:p-4 bg-card border rounded-lg hover:bg-muted/30 transition-colors">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm font-medium">
+                  <div className="text-xs md:text-sm font-medium">
                     {formatDate(bestDay.date)}
                   </div>
-                  <div className="text-sm font-bold text-green-500">
+                  <div className="text-xs md:text-sm font-bold text-green-500">
                     +{bestDay.data.new_players.toLocaleString()} players
                   </div>
                 </div>

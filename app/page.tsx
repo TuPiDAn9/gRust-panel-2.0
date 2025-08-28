@@ -16,17 +16,16 @@ export default async function Home() {
   if (!session) {
     redirect("/login");
   }
-  
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Убираете Header отсюда, так как он теперь в layout */}
-      <main className="container py-4 max-w-7xl">
-        <div className="space-y-6 px-4">
-          <div className="flex gap-6">
+      <main className="container mx-auto py-4 max-w-7xl">
+        <div className="space-y-4 md:space-y-6 px-4">
+          <div className="flex flex-col xl:flex-row gap-4 md:gap-6">
             <div className="flex-1 min-w-0">
               <StatsChart />
             </div>
-            <div className="w-96 flex-shrink-0">
+            <div className="w-full xl:w-96 xl:flex-shrink-0">
               <BestDaysCard />
             </div>
           </div>

@@ -1,11 +1,12 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Search } from 'lucide-react'
+import { Search, MoreVertical, Ban, Shield, Eye, AlertTriangle, Settings, Crown, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   Pagination,
   PaginationContent,
@@ -14,6 +15,25 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { UserMenu } from "@/components/user-menu"
+import { useUser } from '@/contexts/user-context'
 
 interface User {
   avatar: string
@@ -37,64 +57,113 @@ interface UsersData {
 
 function useScreenSize() {
   const [screenSize, setScreenSize] = useState('lg')
-  
+  const [isInitialized, setIsInitialized] = useState(false)
+
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth
-      if (width < 640) setScreenSize('mobile')
-      else if (width < 768) setScreenSize('sm')
-      else if (width < 1024) setScreenSize('md')
-      else if (width < 1280) setScreenSize('lg')
-      else if (width < 1536) setScreenSize('xl')
-      else if (width < 1792) setScreenSize('2xl')
-      else if (width < 2048) setScreenSize('3xl')
-      else if (width < 2304) setScreenSize('4xl')
-      else if (width < 2560) setScreenSize('5xl')
-      else setScreenSize('6xl')
+      let newScreenSize = 'lg'
+      if (width < 640) newScreenSize = 'mobile'
+      else if (width < 768) newScreenSize = 'sm'
+      else if (width < 1024) newScreenSize = 'md'
+      else if (width < 1280) newScreenSize = 'lg'
+      else if (width < 1536) newScreenSize = 'xl'
+      else if (width < 1792) newScreenSize = '2xl'
+      else if (width < 2048) newScreenSize = '3xl'
+      else if (width < 2304) newScreenSize = '4xl'
+      else if (width < 2560) newScreenSize = '5xl'
+      else newScreenSize = '6xl'
+
+      setScreenSize(newScreenSize)
+      if (!isInitialized) {
+        setIsInitialized(true)
+      }
     }
-    
+
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
-  
-  return screenSize
+  }, [isInitialized])
+
+  return { screenSize, isInitialized }
 }
 
-// Значительно увеличенные лимиты
 function getLimit(screenSize: string): number {
   const limits = {
-    'mobile': 10,   // 1 колонка × 10 строк
-    'sm': 20,       // 2 колонки × 10 строк  
-    'md': 30,       // 3 колонки × 10 строк
-    'lg': 40,       // 4 колонки × 10 строк
-    'xl': 15,       // 5 колонок × 10 строк
-    '2xl': 24,      // 6 колонок × 10 строк
-    '3xl': 36,      // 7 колонок × 10 строк
-    '4xl': 36,      // 8 колонок × 10 строк
-    '5xl': 36,      // 9 колонок × 10 строк
-    '6xl': 48,     // 10 колонок × 10 строк
+    'mobile': 6,
+    'sm': 14,
+    'md': 15,
+    'lg': 20,
+    'xl': 15,
+    '2xl': 24,
+    '3xl': 36,
+    '4xl': 36,
+    '5xl': 36,
+    '6xl': 48,
   }
   return limits[screenSize as keyof typeof limits] || 40
+}
+
+// Кастомный хук для debounce
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+
+  return debouncedValue
 }
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [total, setTotal] = useState(0)
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('') // Значение из input
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  
-  const screenSize = useScreenSize()
+  const { screenSize, isInitialized } = useScreenSize()
   const limit = getLimit(screenSize)
+  const [profileUser, setProfileUser] = useState<User | null>(null)
+  const { userInfo: currentUser } = useUser()
+  
+  const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
 
-  const fetchUsers = async (searchQuery: string = '', page: number = 1) => {
+  const handleSteamProfile = (uid: string) => {
+    window.open(`https://steamcommunity.com/profiles/${uid}`, '_blank')
+  }
+
+  const handleGrustProfile = (uid: string) => {
+    window.open(`https://grust.co/profile/${uid}`, '_blank')
+  }
+
+  // Debounce для поиска с задержкой в 500ms
+  const debouncedSearch = useDebounce(searchInput, 1000)
+
+  const prevParams = useRef<{
+    search: string
+    page: number
+    limit: number
+    isInitialized: boolean
+  }>({
+    search: '',
+    page: 1,
+    limit: 40,
+    isInitialized: false
+  })
+
+  const fetchUsers = useCallback(async (searchQuery: string, page: number, currentLimit: number) => {
     try {
       setLoading(true)
       setError(null)
-      const offset = (page - 1) * limit
-      const response = await fetch(`/api/users?search=${searchQuery}&limit=${limit}&offset=${offset}`)
+      const offset = (page - 1) * currentLimit
+      const response = await fetch(`/api/users?search=${searchQuery}&limit=${currentLimit}&offset=${offset}`)
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -103,7 +172,7 @@ export default function UsersPage() {
         const errorData = await response.json()
         throw new Error(errorData.error || `HTTP ${response.status}`)
       }
-      
+
       const data: UsersData = await response.json()
       setUsers(data.users)
       setTotal(data.total)
@@ -113,19 +182,44 @@ export default function UsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    fetchUsers(search, currentPage)
-  }, [search, currentPage, limit])
+    if (!isInitialized) return
 
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [limit])
+    const currentParams = {
+      search: debouncedSearch, // Используем debounced значение
+      page: currentPage,
+      limit,
+      isInitialized
+    }
+
+    const paramsChanged = (
+      prevParams.current.search !== currentParams.search ||
+      prevParams.current.page !== currentParams.page ||
+      prevParams.current.limit !== currentParams.limit ||
+      !prevParams.current.isInitialized
+    )
+
+    if (paramsChanged) {
+      // Если изменился поиск, сбрасываем на первую страницу
+      if (prevParams.current.search !== currentParams.search && prevParams.current.isInitialized) {
+        setCurrentPage(1)
+        fetchUsers(debouncedSearch, 1, limit)
+      } else if (prevParams.current.limit !== currentParams.limit && prevParams.current.isInitialized) {
+        setCurrentPage(1)
+        fetchUsers(debouncedSearch, 1, limit)
+      } else {
+        fetchUsers(debouncedSearch, currentPage, limit)
+      }
+      
+      prevParams.current = currentParams
+    }
+  }, [debouncedSearch, currentPage, limit, isInitialized, fetchUsers])
 
   const handleSearch = (value: string) => {
-    setSearch(value)
-    setCurrentPage(1)
+    setSearchInput(value) // Обновляем только input значение
+    // currentPage будет сброшена в useEffect когда debouncedSearch изменится
   }
 
   const decimalToHex = (decimal: number): string => {
@@ -144,7 +238,7 @@ export default function UsersPage() {
     const date = new Date(lastseen * 1000)
     const now = new Date()
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-    
+
     if (diffInSeconds < 60) return 'Just now'
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
@@ -203,16 +297,21 @@ export default function UsersPage() {
     <div className="min-h-screen bg-background">
       <main className="py-4 max-w-full mx-auto">
         <div className="space-y-6 px-4">
-          {/* Search */}
           <div className="flex justify-center w-full">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search users..."
-                value={search}
+                value={searchInput} // Используем searchInput вместо debouncedSearch
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10"
               />
+              {/* Индикатор загрузки при поиске */}
+              {searchInput !== debouncedSearch && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -233,61 +332,132 @@ export default function UsersPage() {
                   </Button>
                 </div>
               )}
-              <Button onClick={() => fetchUsers(search, currentPage)} variant="outline">
+              <Button onClick={() => fetchUsers(debouncedSearch, currentPage, limit)} variant="outline">
                 Retry
               </Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-7 4xl:grid-cols-8 5xl:grid-cols-9 6xl:grid-cols-10 gap-4">
               {users.map((user) => (
-                <Card key={user.uid} className="hover:shadow-md transition-shadow">
-                  <CardContent className="px-2 py-1">
-                    <div className="flex items-start gap-4">
-                      <div className="relative flex-shrink-0">
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          className="w-12 h-12 rounded-full"
-                        />
-                        {isOnline(user.lastseen) && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1 flex-wrap mb-2">
-                          <h3 className="font-semibold text-sm truncate">{user.name}</h3>
-                          <Badge
-                            variant="secondary"
-                            className="text-xs px-1 py-0"
-                            style={{
-                              backgroundColor: decimalToHex(user.color) + '20',
-                              color: decimalToHex(user.color),
-                              borderColor: decimalToHex(user.color) + '40'
-                            }}
-                          >
-                            {user.rank}
-                          </Badge>
-                          {user.banned && (
-                            <Badge variant="destructive" className="text-xs px-1 py-0">
-                              Banned
-                            </Badge>
+                <UserMenu key={user.uid} user={user}>
+                  <Card className="hover:shadow-md transition-shadow cursor-context-menu">
+                    <CardContent className="px-2 py-1 relative">
+                      <div className="flex items-start gap-4">
+                        <div className="relative flex-shrink-0">
+                          <Image
+                            src={user.avatar}
+                            alt={user.name}
+                            width={48}
+                            height={48}
+                            className="rounded-full"
+                            unoptimized
+                          />
+                          {isOnline(user.lastseen) ? (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background" />
+                          ) : (
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-background" />
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground font-mono mb-1 break-all">
-                          {user.uid}
-                        </p>
-                        <p className={`text-xs font-medium ${isOnline(user.lastseen) ? 'text-green-500' : 'text-muted-foreground'}`}>
-                          {formatLastSeen(user.lastseen)}
-                        </p>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1 flex-wrap mb-2">
+                            <h3 className="font-semibold text-sm truncate">{user.name}</h3>
+                            <Badge
+                              variant="secondary"
+                              className="text-xs px-1 py-0"
+                              style={{
+                                backgroundColor: decimalToHex(user.color) + '20',
+                                color: decimalToHex(user.color),
+                                borderColor: decimalToHex(user.color) + '40'
+                              }}
+                            >
+                              {user.rank}
+                            </Badge>
+                            {user.banned && (
+                              <Badge variant="destructive" className="text-xs px-1 py-0">
+                                Banned
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground font-mono mb-1 break-all">
+                            {user.uid}
+                          </p>
+                          <p className={`text-xs font-medium ${isOnline(user.lastseen) ? 'text-green-500' : 'text-muted-foreground'}`}>
+                            {formatLastSeen(user.lastseen)}
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-1 items-center absolute right-2 top-1/2 transform -translate-y-1/2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MoreVertical className="h-5 w-5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Player Actions</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setProfileUser(user); }}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Profile
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <AlertTriangle className="mr-2 h-4 w-4" />
+                                View Warn
+                              </DropdownMenuItem>
+                              <DropdownMenuItem disabled>
+                                <Settings className="mr-2 h-4 w-4" />
+                                Advanced Info
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem disabled>
+                                <Ban className="mr-2 h-4 w-4" />
+                                Ban
+                              </DropdownMenuItem>
+                              <DropdownMenuItem disabled>
+                                <Shield className="mr-2 h-4 w-4" />
+                                Warn
+                              </DropdownMenuItem>
+                              {canSetRank && (
+                                <DropdownMenuItem disabled>
+                                  <Crown className="mr-2 h-4 w-4" />
+                                  Set Rank
+                                </DropdownMenuItem>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          {user.banned ? (
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="h-7 w-7"
+                              disabled
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Shield className="h-4 w-4 text-green-600" />
+                            </Button>
+                          ) : (
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="h-7 w-7"
+                              disabled
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Ban className="h-4 w-4 text-red-600" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </UserMenu>
               ))}
             </div>
           )}
 
-          {/* Pagination */}
           {!loading && !error && totalPages > 1 && (
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4">
@@ -295,7 +465,7 @@ export default function UsersPage() {
                   Total: {total.toLocaleString()} users
                 </p>
                 <div className="text-xs text-muted-foreground">
-                  Screen: {screenSize} | Limit: {limit}
+                  {screenSize} | Showing: {limit}
                 </div>
               </div>
               <Pagination className="!mx-0 !w-auto !justify-end">
@@ -331,6 +501,54 @@ export default function UsersPage() {
           )}
         </div>
       </main>
+      <Dialog open={!!profileUser} onOpenChange={(isOpen) => !isOpen && setProfileUser(null)}>
+        <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+                <DialogTitle>View Profile</DialogTitle>
+                <DialogDescription>
+                    Choose where to view {profileUser?.name}'s profile:
+                </DialogDescription>
+            </DialogHeader>
+            {profileUser && (
+                <div className="flex items-center gap-3 py-4">
+                    <Image
+                        src={profileUser.avatar}
+                        alt={profileUser.name}
+                        width={48}
+                        height={48}
+                        className="rounded-full"
+                        unoptimized
+                    />
+                    <div>
+                        <p className="font-medium">{profileUser.name}</p>
+                        <p className="text-sm text-muted-foreground font-mono">{profileUser.uid}</p>
+                    </div>
+                </div>
+            )}
+            <DialogFooter className="flex-row sm:justify-between justify-between">
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        onClick={() => profileUser && handleSteamProfile(profileUser.uid)}
+                    >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Open in Steam
+                    </Button>
+                    <Button
+                        onClick={() => profileUser && handleGrustProfile(profileUser.uid)}
+                    >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Open in gRust
+                    </Button>
+                </div>
+                <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                        Close
+                    </Button>
+                </DialogClose>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -76,11 +76,11 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
   };
 
   return (
-    <div className="flex flex-row gap-4 px-4">
-      <div className="flex flex-col gap-4 w-full max-w-md">
+    <div className="flex flex-col lg:flex-row gap-4 md:gap-6 px-4">
+      <div className="flex flex-col gap-4 md:gap-6 w-full lg:max-w-md">
         <Card>
           <CardHeader>
-            <CardTitle>Authentication</CardTitle>
+            <CardTitle className="text-lg md:text-xl">Authentication</CardTitle>
             <CardDescription>Manage your gRust Panel JWT token</CardDescription>
           </CardHeader>
           <CardContent>
@@ -94,7 +94,7 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
                     value={jwt}
                     onChange={(e) => setJwt(e.target.value)}
                     type={isJwtVisible ? 'text' : 'password'}
-                    className="pr-10"
+                    className="pr-10 text-xs md:text-sm"
                   />
                   <Button
                     variant="ghost"
@@ -110,9 +110,9 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
                   </Button>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Button onClick={handleSave} className="flex-1">Save</Button>
-                <Button onClick={handleClear} variant="outline">Clear</Button>
+                <Button onClick={handleClear} variant="outline" className="sm:w-auto">Clear</Button>
               </div>
               <Button onClick={handleTestAPI} variant="ghost" className="w-full">
                 Test JWT
@@ -120,9 +120,10 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
             </div>
           </CardContent>
         </Card>
+
         <Card>
           <CardHeader>
-            <CardTitle>Customization</CardTitle>
+            <CardTitle className="text-lg md:text-xl">Customization</CardTitle>
             <CardDescription>Customize the appearance of your charts</CardDescription>
           </CardHeader>
           <CardContent>
@@ -145,14 +146,15 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
           </CardContent>
         </Card>
       </div>
-      <div className="w-full max-w-md">
+
+      <div className="w-full lg:max-w-md">
         <Card>
           <CardHeader>
-            <CardTitle>Information</CardTitle>
+            <CardTitle className="text-lg md:text-xl">Information</CardTitle>
             <CardDescription>gRust Panel 2.0</CardDescription>
           </CardHeader>
           <CardContent>
-            <p>This is a new and improved version of the gRust Panel.</p>
+            <p className="text-sm md:text-base">This is a new and improved version of the gRust Panel.</p>
           </CardContent>
         </Card>
       </div>

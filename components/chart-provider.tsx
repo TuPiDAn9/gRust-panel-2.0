@@ -1,5 +1,5 @@
 'use client'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 
 export type ChartType = 'bar' | 'area' | 'line'
 
@@ -49,15 +49,14 @@ interface ChartContextType {
 }
 
 const ChartContext = createContext<ChartContextType | undefined>(undefined)
-
 export const ChartProvider = ({ children }: { children: React.ReactNode }) => {
   const [chartType, setChartType] = useState<ChartType>('bar')
   const [stats, setStats] = useState<Stats | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [days, setDays] = useState(7)
 
-  const fetchStats = async (selectedDays?: number) => {
+  const fetchStats = useCallback(async (selectedDays?: number) => {
     try {
       setLoading(true)
       setError(null)
@@ -81,11 +80,11 @@ export const ChartProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [days])
 
   useEffect(() => {
-    fetchStats()
-  }, [])
+    fetchStats(days)
+  }, [fetchStats, days])
 
   const contextValue: ChartContextType = {
     chartType,
@@ -105,6 +104,7 @@ export const ChartProvider = ({ children }: { children: React.ReactNode }) => {
     </ChartContext.Provider>
   )
 }
+
 
 export const useChart = () => {
   const context = useContext(ChartContext)

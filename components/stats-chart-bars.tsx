@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
@@ -44,7 +45,7 @@ export function StatsChart() {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    labelFormatter={(value) => value} // Убрали "Day:" из tooltip
+                    labelFormatter={(value) => value}
                     formatter={(value, name) => (
                       <div className="flex items-center justify-between w-full min-w-[120px]">
                         <div className="flex items-center gap-2">

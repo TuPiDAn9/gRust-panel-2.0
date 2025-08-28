@@ -8,6 +8,7 @@ import { authOptions } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { ChartProvider } from "@/components/chart-provider";
 import { Header } from "@/components/header"; // Добавьте импорт
+import { UserProvider } from '@/contexts/user-context'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,27 +32,26 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions());
-  
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Header остается на серверном уровне */}
-        <Header />
-        
         <SessionProviderWrapper session={session}>
-          <ChartProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {children}
-              <Toaster />
-            </ThemeProvider>
-          </ChartProvider>
+          <UserProvider>
+            <ChartProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+              >
+                <Header />
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </ChartProvider>
+          </UserProvider>
         </SessionProviderWrapper>
       </body>
     </html>

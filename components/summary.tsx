@@ -1,12 +1,11 @@
 'use client'
+import { useEffect, useState, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight, Users, Shield, UsersRound } from 'lucide-react'
+import { Users, Shield, UsersRound } from 'lucide-react'
 import { useChart } from './chart-provider'
-import { useState, useRef, useEffect } from 'react'
 
 export function Summary() {
-  const { stats, loading, error } = useChart()
+  const { stats, loading, error, fetchStats, days } = useChart()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [isPaused, setIsPaused] = useState(false)
 
@@ -28,67 +27,20 @@ export function Summary() {
     }
   ]
 
-  // Бесконечная CSS анимация
   useEffect(() => {
     if (!scrollRef.current || loading || error || !stats) return
-
+    
     const container = scrollRef.current
     container.style.animation = 'none'
-    container.offsetHeight // force reflow
+    container.offsetHeight // trigger reflow
     container.style.animation = isPaused ? 'none' : 'infinite-scroll 20s linear infinite'
   }, [loading, error, stats, isPaused])
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (!scrollRef.current) return
-    
-    const container = scrollRef.current
-    const cardWidth = 336 // 320px + 16px gap
-    
-    // Временно останавливаем анимацию
-    container.style.animation = 'none'
-    
-    const currentTransform = window.getComputedStyle(container).transform
-    let currentX = 0
-    
-    if (currentTransform !== 'none') {
-      const matrix = currentTransform.match(/matrix\(([^)]*)\)/)
-      if (matrix) {
-        currentX = parseFloat(matrix[1].split(', ')[4]) || 0
-      }
-    }
-    
-    let newX
-    if (direction === 'left') {
-      newX = currentX + cardWidth
-      if (newX > 0) {
-        newX = -(cardWidth * summaryItems.length)
-      }
-    } else {
-      newX = currentX - cardWidth
-      if (newX < -(cardWidth * summaryItems.length)) {
-        newX = 0
-      }
-    }
-    
-    container.style.transform = `translateX(${newX}px)`
-    
-    // Возобновляем анимацию через небольшую задержку
-    setTimeout(() => {
-      if (!isPaused) {
-        container.style.animation = 'infinite-scroll 20s linear infinite'
-      }
-    }, 500)
-  }
 
   if (loading) {
     return (
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Summary</h3>
-          <div className="flex gap-1">
-            <div className="w-8 h-8 bg-muted animate-pulse rounded" />
-            <div className="w-8 h-8 bg-muted animate-pulse rounded" />
-          </div>
         </div>
         <div className="flex gap-4 overflow-hidden">
           {[...Array(3)].map((_, index) => (
@@ -109,7 +61,6 @@ export function Summary() {
     )
   }
 
-  // Создаем множественные копии для истинно бесконечного эффекта
   const infiniteItems = Array(8).fill(summaryItems).flat()
 
   return (
@@ -117,17 +68,16 @@ export function Summary() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Summary</h3>
       </div>
-      
-      <div 
+      <div
         className="relative overflow-hidden"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Fade эффекты */}
+        {/* Градиенты */}
         <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-card via-card/80 to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-card via-card/80 to-transparent z-10 pointer-events-none" />
         
-        <div 
+        <div
           ref={scrollRef}
           className="flex gap-4"
           style={{
@@ -136,10 +86,9 @@ export function Summary() {
         >
           {infiniteItems.map((item, index) => {
             const Icon = item.icon
-            
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="min-w-[320px] flex-shrink-0 p-4 rounded-lg border bg-muted/20 border-muted-foreground/20 transition-all duration-200 hover:shadow-md hover:bg-muted/30 hover:border-muted-foreground/40"
               >
                 <div className="flex items-center gap-3">
