@@ -32,7 +32,7 @@ export function Summary() {
     
     const container = scrollRef.current
     container.style.animation = 'none'
-    container.offsetHeight // trigger reflow
+    container.offsetHeight 
     container.style.animation = isPaused ? 'none' : 'infinite-scroll 20s linear infinite'
   }, [loading, error, stats, isPaused])
 
@@ -73,7 +73,7 @@ export function Summary() {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Градиенты */}
+        {}
         <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-card via-card/80 to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-card via-card/80 to-transparent z-10 pointer-events-none" />
         

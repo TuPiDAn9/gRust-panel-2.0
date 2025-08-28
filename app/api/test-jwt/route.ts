@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Используем тот же endpoint что и в Python плагине
     const res = await fetch("https://grust.co/api/users/me", {
       headers: {
         "Cookie": `jwt=${jwt.value}`,

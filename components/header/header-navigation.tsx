@@ -44,7 +44,7 @@ export function HeaderNavigation() {
 
   return (
     <>
-      {/* Desktop Navigation */}
+      {}
       <nav className="hidden md:flex items-center gap-2">
         {navigationItems.map(({ href, icon: Icon, label }) => {
           const isActive = pathname === href;
@@ -67,21 +67,21 @@ export function HeaderNavigation() {
         })}
       </nav>
 
-      {/* Mobile Navigation */}
+      {}
       <div className="md:hidden" ref={menuRef}>
-        {/* Burger Menu Button - по центру и шире */}
+        {}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <Button
             variant="ghost"
             size="sm"
-            className="px-4 py-2 min-w-[48px] h-10" // Сделали шире и выше
+            className="px-4 py-2 min-w-[48px] h-10" 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
 
-        {/* Mobile Menu Dropdown */}
+        {}
         {mobileMenuOpen && session && (
           <div className="absolute left-0 right-0 top-full bg-background border-b shadow-lg z-40 animate-in slide-in-from-top-2 duration-200">
             <div className="container mx-auto p-4">

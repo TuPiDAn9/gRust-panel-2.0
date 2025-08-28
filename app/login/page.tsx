@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Icons } from '@/components/icons'
 import { LogoSpinner } from '@/components/logo-spinner'
-import { ThemeToggle } from '@/components/theme-toggle'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 
 export default function LoginPage() {
   const { data: session, status } = useSession()
@@ -41,27 +41,27 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
-      {/* Theme Toggle - Top Right */}
+      {}
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
 
-      {/* Main Login Card */}
+      {}
       <Card className="w-full max-w-md shadow-2xl bg-card/95 backdrop-blur">
         <CardHeader className="text-center space-y-6">
-          {/* Interactive Logo */}
+          {}
           <div className="flex justify-center">
             <LogoSpinner />
           </div>
           
-          {/* Welcome Title */}
+          {}
           <CardTitle className="text-3xl font-bold tracking-tight">
             Welcome to <span className="text-primary">gRust Panel</span>
           </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Steam Login Button */}
+          {}
           <Button
             className="w-full h-12 text-base bg-[#1b2838] hover:bg-[#2a475e] text-white border-0"
             onClick={handleSteamLogin}
@@ -81,7 +81,7 @@ export default function LoginPage() {
             )}
           </Button>
 
-          {/* Security Info */}
+          {}
           <div className="text-center space-y-2">
             <p className="text-xs text-muted-foreground">
               We use Steam OpenID for secure authentication.<br />

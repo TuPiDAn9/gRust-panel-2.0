@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from "@/auth";
-import { HeaderClient } from "@/components/header-client";
-import { HeaderNavigation } from "@/components/header-navigation";
+import { HeaderClient } from "@/components/header/header-client";
+import { HeaderNavigation } from "@/components/header/header-navigation";
 import { LogoSpinner } from "@/components/logo-spinner";
 
 export async function Header() {
@@ -14,12 +14,12 @@ export async function Header() {
           <LogoSpinner />
         </div>
         
-        {/* Desktop Navigation */}
+        {}
         <div className="hidden md:flex justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           {session && <HeaderNavigation />}
         </div>
         
-        {/* Mobile Navigation - всегда показываем */}
+        {}
         <div className="md:hidden">
           <HeaderNavigation />
         </div>

@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server'
 
 let Steam: any = null
 
-// Загружаем Steam provider только на сервере
 if (typeof window === 'undefined') {
   try {
     Steam = require('next-auth-steam').default
@@ -37,3 +36,5 @@ export function authOptions(req?: NextRequest): AuthOptions {
     }
   }
 }
+
+

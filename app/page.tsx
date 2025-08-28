@@ -1,9 +1,8 @@
-// app/page.tsx
 import { getServerSession } from 'next-auth';
 import { authOptions } from "@/auth";
 import { redirect } from "next/navigation";
-import { StatsChart } from "@/components/stats-chart-bars";
-import { BestDaysCard } from "@/components/best-days";
+import { StatsChart } from "@/components/charts/stats-chart-bars";
+import { BestDaysCard } from "@/components/charts/best-days";
 import { Summary } from "@/components/summary";
 import type { Metadata } from "next";
 

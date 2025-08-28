@@ -32,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { UserMenu } from "@/components/user-menu"
+import { UserMenu } from "@/components/user/user-menu";
 import { useUser } from '@/contexts/user-context'
 
 interface User {
@@ -104,7 +104,6 @@ function getLimit(screenSize: string): number {
   return limits[screenSize as keyof typeof limits] || 40
 }
 
-// Кастомный хук для debounce
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value)
 
@@ -124,7 +123,7 @@ function useDebounce(value: string, delay: number) {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [total, setTotal] = useState(0)
-  const [searchInput, setSearchInput] = useState('') // Значение из input
+  const [searchInput, setSearchInput] = useState('') 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -143,7 +142,6 @@ export default function UsersPage() {
     window.open(`https://grust.co/profile/${uid}`, '_blank')
   }
 
-  // Debounce для поиска с задержкой в 500ms
   const debouncedSearch = useDebounce(searchInput, 1000)
 
   const prevParams = useRef<{
@@ -188,7 +186,7 @@ export default function UsersPage() {
     if (!isInitialized) return
 
     const currentParams = {
-      search: debouncedSearch, // Используем debounced значение
+      search: debouncedSearch, 
       page: currentPage,
       limit,
       isInitialized
@@ -202,7 +200,6 @@ export default function UsersPage() {
     )
 
     if (paramsChanged) {
-      // Если изменился поиск, сбрасываем на первую страницу
       if (prevParams.current.search !== currentParams.search && prevParams.current.isInitialized) {
         setCurrentPage(1)
         fetchUsers(debouncedSearch, 1, limit)
@@ -218,8 +215,7 @@ export default function UsersPage() {
   }, [debouncedSearch, currentPage, limit, isInitialized, fetchUsers])
 
   const handleSearch = (value: string) => {
-    setSearchInput(value) // Обновляем только input значение
-    // currentPage будет сброшена в useEffect когда debouncedSearch изменится
+    setSearchInput(value) 
   }
 
   const decimalToHex = (decimal: number): string => {
@@ -302,11 +298,11 @@ export default function UsersPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search users..."
-                value={searchInput} // Используем searchInput вместо debouncedSearch
+                value={searchInput} 
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10"
               />
-              {/* Индикатор загрузки при поиске */}
+              {}
               {searchInput !== debouncedSearch && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>

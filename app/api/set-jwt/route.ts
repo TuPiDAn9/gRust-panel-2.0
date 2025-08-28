@@ -10,15 +10,14 @@ export async function POST(request: NextRequest) {
 
     const response = NextResponse.json({ success: true });
     
-    // Устанавливаем HttpOnly cookie как на grust.co
     response.cookies.set({
       name: "jwt",
       value: jwt,
       httpOnly: true,
       path: "/",
       sameSite: "strict",
-      secure: false, // true только для production
-      maxAge: 60 * 60 * 24 * 7, // 7 дней
+      secure: false, 
+      maxAge: 60 * 60 * 24 * 7, 
     });
 
     return response;
