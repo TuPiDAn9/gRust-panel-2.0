@@ -26,14 +26,15 @@ export async function GET(request: NextRequest) {
     }
 
     const apiData = await response.json();
+    const statsData = apiData.data || apiData;
 
-    if (!apiData.success || !apiData.data?.week_data) {
+    if (apiData.success === false || !statsData.week_data) {
       return NextResponse.json({
         error: "Invalid API response format"
       }, { status: 500 });
     }
 
-    let weekData = apiData.data.week_data;
+    let weekData = statsData.week_data;
     if (requestedDays === 3) {
       weekData = weekData.slice(-3);
     } else if (requestedDays === 5) {
@@ -59,20 +60,20 @@ export async function GET(request: NextRequest) {
 
     const data = {
       today: {
-        bans: apiData.data.today?.bans || 0,
-        new_players: apiData.data.today?.new_players || 0,
-        unbans: apiData.data.today?.unbans || 0,
+        bans: statsData.today?.bans || 0,
+        new_players: statsData.today?.new_players || 0,
+        unbans: statsData.today?.unbans || 0,
       },
       yesterday: {
-        bans: apiData.data.yesterday?.bans || 0,
-        new_players: apiData.data.yesterday?.new_players || 0,
-        unbans: apiData.data.yesterday?.unbans || 0,
+        bans: statsData.yesterday?.bans || 0,
+        new_players: statsData.yesterday?.new_players || 0,
+        unbans: statsData.yesterday?.unbans || 0,
       },
       week_data: formattedWeekData,
-      best_days: apiData.data.best_days || [],
-      total_players: apiData.data.total_players || 0,
-      total_bans: apiData.data.total_bans || 0,
-      new_players: apiData.data.new_players || 0,
+      best_days: statsData.best_days || [],
+      total_players: statsData.total_players || 0,
+      total_bans: statsData.total_bans || 0,
+      new_players: statsData.new_players || 0,
     };
 
     return NextResponse.json(data);

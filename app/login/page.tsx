@@ -1,11 +1,12 @@
 'use client'
-
 import { useState, useEffect } from 'react'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import { useSession, signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Icons } from '@/components/icons'
+import { LogoSpinner } from '@/components/logo-spinner'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function LoginPage() {
   const { data: session, status } = useSession()
@@ -15,7 +16,6 @@ export default function LoginPage() {
   const handleSteamLogin = async () => {
     setIsLoading(true)
     try {
-      // After successful login, redirect to home page
       await signIn('steam', { callbackUrl: '/' })
     } catch (error) {
       setIsLoading(false)
@@ -23,7 +23,6 @@ export default function LoginPage() {
   }
 
   useEffect(() => {
-    // If user is authenticated, redirect to home page
     if (status === 'authenticated') {
       router.push('/')
     }
@@ -32,49 +31,64 @@ export default function LoginPage() {
   if (status === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <div className="animate-pulse">Loading...</div>
+        <div className="flex items-center gap-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <span className="text-lg">Loading...</span>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 to-black p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome to gRust Panel</CardTitle>
-          <CardDescription>
-            Sign in with your Steam account to continue
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center">
-            <p className="mb-6 text-sm text-muted-foreground">
-              Connect your Steam account to access the gRust Panel
-            </p>
-            <div className="flex justify-center">
-              <Icons.steam className="h-12 w-12 text-blue-500" />
-            </div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      {/* Theme Toggle - Top Right */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+
+      {/* Main Login Card */}
+      <Card className="w-full max-w-md shadow-2xl bg-card/95 backdrop-blur">
+        <CardHeader className="text-center space-y-6">
+          {/* Interactive Logo */}
+          <div className="flex justify-center">
+            <LogoSpinner />
           </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button 
-            className="w-full bg-blue-600 hover:bg-blue-700" 
+          
+          {/* Welcome Title */}
+          <CardTitle className="text-3xl font-bold tracking-tight">
+            Welcome to <span className="text-primary">gRust Panel</span>
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {/* Steam Login Button */}
+          <Button
+            className="w-full h-12 text-base bg-[#1b2838] hover:bg-[#2a475e] text-white border-0"
             onClick={handleSteamLogin}
             disabled={isLoading}
+            size="lg"
           >
             {isLoading ? (
               <>
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                <Icons.spinner className="mr-2 h-5 w-5 animate-spin" />
                 Signing in...
               </>
             ) : (
               <>
                 <Icons.steam className="mr-2 h-5 w-5" />
-                Sign in with Steam
+                Login with Steam
               </>
             )}
           </Button>
-        </CardFooter>
+
+          {/* Security Info */}
+          <div className="text-center space-y-2">
+            <p className="text-xs text-muted-foreground">
+              We use Steam OpenID for secure authentication.<br />
+              So your Steam credentials are not stored anywhere.
+            </p>
+          </div>
+        </CardContent>
       </Card>
     </div>
   )

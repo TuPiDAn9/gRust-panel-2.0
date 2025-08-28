@@ -1,3 +1,4 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -7,8 +8,9 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from "@/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { ChartProvider } from "@/components/chart-provider";
-import { Header } from "@/components/header"; // Добавьте импорт
+import { Header } from "@/components/header";
 import { UserProvider } from '@/contexts/user-context'
+import { headers } from "next/headers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +34,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions());
+  const pathname = (await headers()).get("x-current-path") ?? "";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -46,7 +50,7 @@ export default async function RootLayout({
                 enableSystem
                 disableTransitionOnChange
               >
-                <Header />
+                {pathname.startsWith("/login") ? null : <Header />}
                 {children}
                 <Toaster />
               </ThemeProvider>

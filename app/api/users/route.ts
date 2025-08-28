@@ -29,13 +29,13 @@ export async function GET(request: NextRequest) {
 
     const apiData = await response.json();
 
-    if (!apiData.success) {
+    if (apiData.success === false) {
       return NextResponse.json({
         error: "Invalid API response"
       }, { status: 500 });
     }
 
-    return NextResponse.json(apiData.data);
+    return NextResponse.json(apiData.data || apiData);
   } catch (error) {
     console.error('Users API Error:', error);
     return NextResponse.json({

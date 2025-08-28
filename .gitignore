@@ -44,3 +44,5 @@ next-env.d.ts
 QWEN.md
 GEMINI.md
 *.code-workspace
+example
+error
