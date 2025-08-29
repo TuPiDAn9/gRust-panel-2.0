@@ -9,5 +9,5 @@
    ```
 3. Run the development server:
    ```bash
-   pnpm run dev
+   pnpm dev
    ```
