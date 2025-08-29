@@ -23,6 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Dialog,
   DialogClose,
@@ -274,14 +275,27 @@ export default function UsersPage() {
 
   const generateLoadingCards = () => {
     return [...Array(limit)].map((_, index) => (
-      <Card key={index} className="animate-pulse">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-12 h-12 bg-muted rounded-full flex-shrink-0" />
-            <div className="flex-1 space-y-2 min-w-0">
-              <div className="h-4 bg-muted rounded w-3/4" />
-              <div className="h-3 bg-muted rounded w-1/2" />
-              <div className="h-3 bg-muted rounded w-1/4" />
+      <Card key={index}>
+        <CardContent className="px-2 py-1 relative">
+          <div className="flex items-start gap-4">
+            {/* Avatar Skeleton */}
+            <div className="relative flex-shrink-0">
+              <Skeleton className="w-12 h-12 rounded-full" />
+              <Skeleton className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full" />
+            </div>
+            {/* Info Skeleton */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1 flex-wrap mb-2">
+                <Skeleton className="h-5 w-3/5" /> { /* Name */}
+                <Skeleton className="h-4 w-1/5" /> { /* Rank */}
+              </div>
+              <Skeleton className="h-4 w-full mb-1" /> { /* UID */}
+              <Skeleton className="h-4 w-2/5" /> { /* Last Seen */}
+            </div>
+            {/* Actions Skeleton */}
+            <div className="flex flex-col gap-1 items-center absolute right-2 top-1/2 transform -translate-y-1/2">
+              <Skeleton className="h-8 w-8" />
+              <Skeleton className="h-7 w-7" />
             </div>
           </div>
         </CardContent>
