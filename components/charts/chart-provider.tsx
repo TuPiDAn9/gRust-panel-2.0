@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 
 export type ChartType = 'bar' | 'area' | 'line'
@@ -50,41 +50,53 @@ interface ChartContextType {
 
 const ChartContext = createContext<ChartContextType | undefined>(undefined)
 export const ChartProvider = ({ children }: { children: React.ReactNode }) => {
-  const [chartType, setChartType] = useState<ChartType>('bar')
-  const [stats, setStats] = useState<Stats | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [days, setDays] = useState(7)
+  const [chartType, setChartTypeState] = useState<ChartType>('bar');
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [days, setDays] = useState(7);
+
+  useEffect(() => {
+    const savedChartType = localStorage.getItem('chartType') as ChartType;
+    if (savedChartType) {
+      setChartTypeState(savedChartType);
+    }
+  }, []);
+
+  const setChartType = (type: ChartType) => {
+    setChartTypeState(type);
+    localStorage.setItem('chartType', type);
+  };
 
   const fetchStats = useCallback(async (selectedDays?: number) => {
     try {
-      setLoading(true)
-      setError(null)
-      const daysParam = selectedDays || days
-      const response = await fetch(`/api/stats?days=${daysParam}`)
+      setLoading(true);
+      setError(null);
+      const daysParam = selectedDays || days;
+      const response = await fetch(`/api/stats?days=${daysParam}`);
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error('JWT not found. Please configure your JWT token in settings.')
+          throw new Error('JWT not found. Please configure your JWT token in settings.');
         }
-        const errorData = await response.json()
-        throw new Error(errorData.error || `HTTP ${response.status}`)
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
       }
-      const data = await response.json()
+      const data = await response.json();
       if (data.error) {
-        throw new Error(data.error)
+        throw new Error(data.error);
       }
-      setStats(data)
+      setStats(data);
     } catch (err: any) {
-      setError(err.message || 'Failed to fetch stats')
-      console.error('Chart Provider Error:', err)
+      setError(err.message || 'Failed to fetch stats');
+      console.error('Chart Provider Error:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [days])
+  }, [days]);
 
   useEffect(() => {
-    fetchStats(days)
-  }, [fetchStats, days])
+    fetchStats(days);
+  }, [fetchStats, days]);
 
   const contextValue: ChartContextType = {
     chartType,
@@ -96,7 +108,7 @@ export const ChartProvider = ({ children }: { children: React.ReactNode }) => {
     fetchStats,
     days,
     setDays,
-  }
+  };
 
   return (
     <ChartContext.Provider value={contextValue}>

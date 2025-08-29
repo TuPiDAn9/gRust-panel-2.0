@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -499,7 +499,7 @@ export default function UsersPage() {
       </main>
       <Dialog open={!!profileUser} onOpenChange={(isOpen) => !isOpen && setProfileUser(null)}>
         <DialogContent className="sm:max-w-md">
-            <DialogHeader>
+            <DialogHeader className="text-left">
                 <DialogTitle>View Profile</DialogTitle>
                 <DialogDescription>
                     Choose where to view {profileUser?.name}'s profile:
@@ -521,8 +521,8 @@ export default function UsersPage() {
                     </div>
                 </div>
             )}
-            <DialogFooter className="flex-row sm:justify-between justify-between">
-                <div className="flex gap-2">
+            <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                         variant="outline"
                         onClick={() => profileUser && handleSteamProfile(profileUser.uid)}
@@ -538,7 +538,7 @@ export default function UsersPage() {
                     </Button>
                 </div>
                 <DialogClose asChild>
-                    <Button type="button" variant="secondary">
+                    <Button type="button" variant="secondary" className="hidden sm:flex">
                         Close
                     </Button>
                 </DialogClose>

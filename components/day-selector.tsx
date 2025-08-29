@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import {
   Select,
   SelectContent,
@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useChart } from './chart-provider'
+import { useChart } from './charts/chart-provider'
 
 export function DaySelector() {
   const { days, setDays, fetchStats } = useChart()

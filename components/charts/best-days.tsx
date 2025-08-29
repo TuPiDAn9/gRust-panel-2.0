@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -25,7 +25,7 @@ export function BestDaysCard() {
 
   if (loading) {
     return (
-      <Card className="w-full">
+      <Card className="w-full h-full">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
         </CardHeader>
@@ -46,7 +46,7 @@ export function BestDaysCard() {
 
   if (error) {
     return (
-      <Card className="w-full">
+      <Card className="w-full h-full">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
         </CardHeader>
@@ -74,7 +74,7 @@ export function BestDaysCard() {
 
   if (!bestDaysToShow.length) {
     return (
-      <Card className="w-full">
+      <Card className="w-full h-full">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
         </CardHeader>
@@ -88,7 +88,7 @@ export function BestDaysCard() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full">
       <CardHeader>
         <CardTitle className="text-lg md:text-xl">Best Days</CardTitle>
       </CardHeader>

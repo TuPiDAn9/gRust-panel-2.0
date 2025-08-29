@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
 import {
   ChartConfig,
@@ -27,7 +27,7 @@ export function ChartLineMultiple() {
   const { data } = useChart();
 
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer config={chartConfig} className="h-full w-full">
       <LineChart
         accessibilityLayer
         data={data}

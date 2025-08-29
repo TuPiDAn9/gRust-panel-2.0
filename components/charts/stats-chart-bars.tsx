@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useEffect } from 'react';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useChart } from './chart-provider';
 import { ChartAreaInteractive } from './stats-chart-area-interactive';
 import { ChartLineMultiple } from './stats-chart-line-multiple';
-import { DaySelector } from './day-selector';
+import { DaySelector } from '../day-selector';
 import { ChartLegendHeader } from './chart-legend-header';
 
 const chartConfig = {
@@ -38,7 +38,7 @@ export function StatsChart() {
       case 'bar':
       default:
         return (
-          <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+          <ChartContainer config={chartConfig} className="h-full w-full">
             <BarChart data={data} margin={{ top: 0, right: 50, bottom: 0, left: 0 }}>
               <XAxis dataKey="name" />
               <YAxis />
@@ -75,7 +75,7 @@ export function StatsChart() {
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex flex-row items-center justify-between">
             <CardTitle>Week Stats</CardTitle>
@@ -85,13 +85,13 @@ export function StatsChart() {
             <ChartLegendHeader chartConfig={chartConfig} />
         </div>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent className="px-0 flex-1 flex flex-col">
         {loading ? (
-          <div className="flex items-center justify-center min-h-[200px]">
+          <div className="flex items-center justify-center flex-1">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center min-h-[200px] gap-4">
+          <div className="flex flex-col items-center justify-center flex-1 gap-4">
             <p className="text-red-500 text-center">{error}</p>
             {error.includes('JWT not found') && (
               <div className="text-center">
@@ -108,7 +108,7 @@ export function StatsChart() {
             </Button>
           </div>
         ) : (
-          renderChart()
+          <div className="h-full">{renderChart()}</div>
         )}
       </CardContent>
     </Card>

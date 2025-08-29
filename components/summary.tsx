@@ -1,8 +1,8 @@
-'use client'
+"use client"
 import { useEffect, useState, useRef } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Users, Shield, UsersRound } from 'lucide-react'
-import { useChart } from './chart-provider'
+import { useChart } from './charts/chart-provider'
 
 export function Summary() {
   const { stats, loading, error, fetchStats, days } = useChart()
@@ -29,12 +29,18 @@ export function Summary() {
 
   useEffect(() => {
     if (!scrollRef.current || loading || error || !stats) return
-    
+
     const container = scrollRef.current
     container.style.animation = 'none'
-    container.offsetHeight 
-    container.style.animation = isPaused ? 'none' : 'infinite-scroll 20s linear infinite'
-  }, [loading, error, stats, isPaused])
+    container.offsetHeight
+    container.style.animation = 'infinite-scroll 20s linear infinite'
+  }, [loading, error, stats])
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.style.animationPlayState = isPaused ? 'paused' : 'running'
+    }
+  }, [isPaused])
 
   if (loading) {
     return (

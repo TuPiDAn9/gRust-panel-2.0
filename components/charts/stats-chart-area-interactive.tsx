@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import * as React from 'react';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import {
@@ -30,7 +30,7 @@ export function ChartAreaInteractive() {
   return (
     <ChartContainer
       config={chartConfig}
-      className="aspect-auto h-[250px] w-full"
+      className="h-full w-full"
     >
       <AreaChart data={data} margin={{
         top: 5,

@@ -9,6 +9,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { ChartProvider } from "@/components/charts/chart-provider";
 import { Header } from "@/components/header/header";
 import { UserProvider } from '@/contexts/user-context'
+import { JwtStatusProvider } from "@/components/jwt-status-provider";
+import { JwtGuard } from "@/components/jwt-guard";
 import { headers } from "next/headers";
 
 const geistSans = Geist({
@@ -42,18 +44,22 @@ export default async function RootLayout({
       >
         <SessionProviderWrapper session={session}>
           <UserProvider>
-            <ChartProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {pathname.startsWith("/login") ? null : <Header />}
-                {children}
-                <Toaster />
-              </ThemeProvider>
-            </ChartProvider>
+            <JwtStatusProvider>
+              <ChartProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="system"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  {pathname.startsWith("/login") ? null : <Header />}
+                  <JwtGuard>
+                    {children}
+                  </JwtGuard>
+                  <Toaster />
+                </ThemeProvider>
+              </ChartProvider>
+            </JwtStatusProvider>
           </UserProvider>
         </SessionProviderWrapper>
       </body>

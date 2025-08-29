@@ -1,16 +1,8 @@
-'use client'
-import { useState, useEffect } from 'react'
-import { MoreVertical, ExternalLink, Eye, AlertTriangle, Settings, Ban, Shield, Crown } from 'lucide-react'
+"use client"
+import { useState } from 'react'
+import { ExternalLink, Eye, AlertTriangle, Settings, Ban, Shield, Crown } from 'lucide-react'
 import { useUser } from '@/contexts/user-context'
 import Image from 'next/image'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   ContextMenu,
   ContextMenuContent,
@@ -20,16 +12,14 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 
 interface User {
@@ -114,14 +104,14 @@ export function UserMenu({ user, children }: UserMenuProps) {
         </ContextMenuContent>
       </ContextMenu>
 
-      <AlertDialog open={viewProfileOpen} onOpenChange={setViewProfileOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>View Profile</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Dialog open={viewProfileOpen} onOpenChange={setViewProfileOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>View Profile</DialogTitle>
+            <DialogDescription>
               Choose where to view {user.name}'s profile:
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+            </DialogDescription>
+          </DialogHeader>
           <div className="flex items-center gap-3 py-4">
             <Image
               src={user.avatar}
@@ -136,8 +126,8 @@ export function UserMenu({ user, children }: UserMenuProps) {
               <p className="text-sm text-muted-foreground font-mono">{user.uid}</p>
             </div>
           </div>
-          <AlertDialogFooter className="flex-row justify-between">
-            <div className="flex gap-2">
+          <DialogFooter className="flex-col sm:flex-row sm:justify-between">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
                 onClick={handleSteamProfile}
@@ -152,10 +142,12 @@ export function UserMenu({ user, children }: UserMenuProps) {
                 Open in gRust
               </Button>
             </div>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <DialogClose asChild>
+              <Button variant="outline" className="hidden sm:flex">Cancel</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
