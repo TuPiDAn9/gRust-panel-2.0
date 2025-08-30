@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { uid: string } }
+  { params }: { params: Promise<{ uid: string }> }
 ) {
   try {
+    const { uid } = await params;
     const jwt = request.cookies.get("jwt");
     
     if (!jwt) {
@@ -13,7 +14,7 @@ export async function GET(
       }, { status: 401 });
     }
 
-    const response = await fetch(`https://grust.co/api/users/${params.uid}`, {
+    const response = await fetch(`https://grust.co/api/users/${uid}`, {
       headers: {
         "Cookie": `jwt=${jwt.value}`,
         'Content-Type': 'application/json'
