@@ -19,8 +19,8 @@ export default async function Home() {
 
   return (
     <>
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto py-4 max-w-7xl">
+      <div className="h-full bg-background">
+        <div className="container mx-auto py-4 max-w-7xl">
           <div className="space-y-4 md:space-y-6 px-4">
             <div className="flex flex-col xl:flex-row gap-4 md:gap-6">
               <div className="flex-1 min-w-0">
@@ -32,7 +32,7 @@ export default async function Home() {
             </div>
             <Summary />
           </div>
-        </main>
+        </div>
       </div>
     </>
   );

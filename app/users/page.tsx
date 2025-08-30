@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Search, MoreVertical, Ban, Shield, Eye, AlertTriangle, Settings, Crown, ExternalLink } from 'lucide-react'
+import { Search, MoreVertical, Ban, Shield, Eye, AlertTriangle, Settings, Crown, ExternalLink, OctagonAlert } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog"
 import { UserMenu } from "@/components/user/user-menu"
 import { WarnsDialog } from "@/components/user/warns-dialog"
+import { CreateWarnDialog } from "@/components/user/create-warn-dialog"
 import { UserProfileDialog } from "@/components/user/user-profile-dialog"
 import { useUser } from '@/contexts/user-context'
 
@@ -135,6 +136,7 @@ export default function UsersPage() {
   const [profileUser, setProfileUser] = useState<User | null>(null)
   const [warnsUser, setWarnsUser] = useState<User | null>(null)
   const [advancedInfoUser, setAdvancedInfoUser] = useState<User | null>(null)
+  const [createWarnUser, setCreateWarnUser] = useState<User | null>(null)
   const { userInfo: currentUser } = useUser()
 
   const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
@@ -305,8 +307,8 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="py-4 max-w-full mx-auto overflow-x-hidden">
+    <div className="h-full bg-background">
+      <div className="py-4 max-w-full mx-auto overflow-x-hidden">
         <div className="space-y-6 px-4">
           <div className="flex justify-center w-full">
             <div className="relative w-full max-w-md">
@@ -423,11 +425,15 @@ export default function UsersPage() {
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem disabled>
-                                <Ban className="mr-2 h-4 w-4" />
-                                Ban
+                                {user.banned ? (
+                                  <Shield className="mr-2 h-4 w-4" />
+                                ) : (
+                                  <Ban className="mr-2 h-4 w-4" />
+                                )}
+                                {user.banned ? 'Unban' : 'Ban'}
                               </DropdownMenuItem>
-                              <DropdownMenuItem disabled>
-                                <Shield className="mr-2 h-4 w-4" />
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setCreateWarnUser(user); }}>
+                                <OctagonAlert className="mr-2 h-4 w-4" />
                                 Warn
                               </DropdownMenuItem>
                               {canSetRank && (
@@ -510,7 +516,7 @@ export default function UsersPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
 
       <Dialog open={!!profileUser} onOpenChange={(isOpen) => !isOpen && setProfileUser(null)}>
         <DialogContent className="sm:max-w-md">
@@ -570,6 +576,13 @@ export default function UsersPage() {
         uid={advancedInfoUser?.uid || null}
         isOpen={!!advancedInfoUser}
         onOpenChange={(isOpen) => !isOpen && setAdvancedInfoUser(null)}
+      />
+      <CreateWarnDialog
+        user={createWarnUser}
+        isOpen={!!createWarnUser}
+        onOpenChange={(isOpen) => !isOpen && setCreateWarnUser(null)}
+        onWarnCreated={() => {
+        }}
       />
     </div>
   )

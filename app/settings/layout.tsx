@@ -4,8 +4,8 @@ export default function SettingsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container py-4">{children}</main>
+    <div className="h-full bg-background">
+      <div className="container py-4">{children}</div>
     </div>
   );
 }

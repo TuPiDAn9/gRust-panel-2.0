@@ -1,6 +1,6 @@
 "use client"
 import { useState } from 'react'
-import { ExternalLink, Eye, AlertTriangle, Settings, Ban, Shield, Crown } from 'lucide-react'
+import { ExternalLink, Eye, AlertTriangle, Settings, Ban, Shield, Crown, OctagonAlert } from 'lucide-react'
 import { useUser } from '@/contexts/user-context'
 import Image from 'next/image'
 import {
@@ -23,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { WarnsDialog } from "@/components/user/warns-dialog"
 import { UserProfileDialog } from "@/components/user/user-profile-dialog"
+import { CreateWarnDialog } from "@/components/user/create-warn-dialog"
 
 interface User {
   avatar: string
@@ -49,6 +50,7 @@ export function UserMenu({ user, children }: UserMenuProps) {
   const [viewProfileOpen, setViewProfileOpen] = useState(false)
   const [viewWarnsOpen, setViewWarnsOpen] = useState(false)
   const [advancedInfoOpen, setAdvancedInfoOpen] = useState(false)
+  const [createWarnOpen, setCreateWarnOpen] = useState(false)
 
   const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
 
@@ -77,11 +79,15 @@ export function UserMenu({ user, children }: UserMenuProps) {
       </ContextMenuItem>
       <ContextMenuSeparator />
       <ContextMenuItem disabled>
-        <Ban className="mr-2 h-4 w-4" />
-        Ban
+        {user.banned ? (
+          <Shield className="mr-2 h-4 w-4" />
+        ) : (
+          <Ban className="mr-2 h-4 w-4" />
+        )}
+        {user.banned ? 'Unban' : 'Ban'}
       </ContextMenuItem>
-      <ContextMenuItem disabled>
-        <Shield className="mr-2 h-4 w-4" />
+      <ContextMenuItem onClick={() => setCreateWarnOpen(true)}>
+        <OctagonAlert className="mr-2 h-4 w-4" />
         Warn
       </ContextMenuItem>
       {canSetRank && (
@@ -159,6 +165,14 @@ export function UserMenu({ user, children }: UserMenuProps) {
         uid={user.uid}
         isOpen={advancedInfoOpen}
         onOpenChange={setAdvancedInfoOpen}
+      />
+      <CreateWarnDialog
+        user={user}
+        isOpen={createWarnOpen}
+        onOpenChange={setCreateWarnOpen}
+        onWarnCreated={() => {
+          setViewWarnsOpen(true)
+        }}
       />
     </>
   )

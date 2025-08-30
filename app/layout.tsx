@@ -40,7 +40,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <SessionProviderWrapper session={session}>
           <UserProvider>
@@ -53,9 +53,11 @@ export default async function RootLayout({
                   disableTransitionOnChange
                 >
                   {pathname.startsWith("/login") ? null : <Header />}
-                  <JwtGuard>
-                    {children}
-                  </JwtGuard>
+                  <main className="flex-1">
+                    <JwtGuard>
+                      {children}
+                    </JwtGuard>
+                  </main>
                   <Toaster />
                 </ThemeProvider>
               </ChartProvider>
