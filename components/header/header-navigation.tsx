@@ -83,8 +83,8 @@ export function HeaderNavigation() {
 
         {}
         {mobileMenuOpen && session && (
-          <div className="absolute left-0 right-0 top-full bg-background border-b shadow-lg z-40 animate-in slide-in-from-top-2 duration-200">
-            <div className="container mx-auto p-4">
+          <div className="absolute left-0 right-0 top-full bg-background border-b shadow-lg z-40 animate-in slide-in-from-top-2 duration-200 ">
+            <div className="container mx-auto p-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
               <nav className="grid grid-cols-2 gap-2">
                 {navigationItems.map(({ href, icon: Icon, label }) => {
                   const isActive = pathname === href;

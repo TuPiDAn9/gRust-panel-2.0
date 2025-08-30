@@ -33,7 +33,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { UserMenu } from "@/components/user/user-menu";
+import { UserMenu } from "@/components/user/user-menu"
+import { WarnsDialog } from "@/components/user/warns-dialog"
+import { UserProfileDialog } from "@/components/user/user-profile-dialog"
 import { useUser } from '@/contexts/user-context'
 
 interface User {
@@ -124,15 +126,17 @@ function useDebounce(value: string, delay: number) {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [total, setTotal] = useState(0)
-  const [searchInput, setSearchInput] = useState('') 
+  const [searchInput, setSearchInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const { screenSize, isInitialized } = useScreenSize()
   const limit = getLimit(screenSize)
   const [profileUser, setProfileUser] = useState<User | null>(null)
+  const [warnsUser, setWarnsUser] = useState<User | null>(null)
+  const [advancedInfoUser, setAdvancedInfoUser] = useState<User | null>(null)
   const { userInfo: currentUser } = useUser()
-  
+
   const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
 
   const handleSteamProfile = (uid: string) => {
@@ -171,7 +175,7 @@ export default function UsersPage() {
         const errorData = await response.json()
         throw new Error(errorData.error || `HTTP ${response.status}`)
       }
-
+      
       const data: UsersData = await response.json()
       setUsers(data.users)
       setTotal(data.total)
@@ -185,9 +189,9 @@ export default function UsersPage() {
 
   useEffect(() => {
     if (!isInitialized) return
-
+    
     const currentParams = {
-      search: debouncedSearch, 
+      search: debouncedSearch,
       page: currentPage,
       limit,
       isInitialized
@@ -216,7 +220,7 @@ export default function UsersPage() {
   }, [debouncedSearch, currentPage, limit, isInitialized, fetchUsers])
 
   const handleSearch = (value: string) => {
-    setSearchInput(value) 
+    setSearchInput(value)
   }
 
   const decimalToHex = (decimal: number): string => {
@@ -235,7 +239,7 @@ export default function UsersPage() {
     const date = new Date(lastseen * 1000)
     const now = new Date()
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
+    
     if (diffInSeconds < 60) return 'Just now'
     if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
     if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
@@ -249,7 +253,7 @@ export default function UsersPage() {
     const maxVisiblePages = 5
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
-
+    
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1)
     }
@@ -278,21 +282,18 @@ export default function UsersPage() {
       <Card key={index}>
         <CardContent className="px-2 py-1 relative">
           <div className="flex items-start gap-4">
-            {/* Avatar Skeleton */}
             <div className="relative flex-shrink-0">
               <Skeleton className="w-12 h-12 rounded-full" />
               <Skeleton className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full" />
             </div>
-            {/* Info Skeleton */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1 flex-wrap mb-2">
-                <Skeleton className="h-5 w-3/5" /> { /* Name */}
-                <Skeleton className="h-4 w-1/5" /> { /* Rank */}
+                <Skeleton className="h-5 w-3/5" />
+                <Skeleton className="h-4 w-1/5" />
               </div>
-              <Skeleton className="h-4 w-full mb-1" /> { /* UID */}
-              <Skeleton className="h-4 w-2/5" /> { /* Last Seen */}
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-2/5" />
             </div>
-            {/* Actions Skeleton */}
             <div className="flex flex-col gap-1 items-center absolute right-2 top-1/2 transform -translate-y-1/2">
               <Skeleton className="h-8 w-8" />
               <Skeleton className="h-7 w-7" />
@@ -305,18 +306,17 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="py-4 max-w-full mx-auto">
+      <main className="py-4 max-w-full mx-auto overflow-x-hidden">
         <div className="space-y-6 px-4">
           <div className="flex justify-center w-full">
             <div className="relative w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search users..."
-                value={searchInput} 
+                value={searchInput}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10"
               />
-              {}
               {searchInput !== debouncedSearch && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
@@ -413,11 +413,11 @@ export default function UsersPage() {
                                 <Eye className="mr-2 h-4 w-4" />
                                 View Profile
                               </DropdownMenuItem>
-                              <DropdownMenuItem>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setWarnsUser(user); }}>
                                 <AlertTriangle className="mr-2 h-4 w-4" />
-                                View Warn
+                                View Warns
                               </DropdownMenuItem>
-                              <DropdownMenuItem disabled>
+                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setAdvancedInfoUser(user); }}>
                                 <Settings className="mr-2 h-4 w-4" />
                                 Advanced Info
                               </DropdownMenuItem>
@@ -511,54 +511,66 @@ export default function UsersPage() {
           )}
         </div>
       </main>
+
       <Dialog open={!!profileUser} onOpenChange={(isOpen) => !isOpen && setProfileUser(null)}>
         <DialogContent className="sm:max-w-md">
-            <DialogHeader className="text-left">
-                <DialogTitle>View Profile</DialogTitle>
-                <DialogDescription>
-                    Choose where to view {profileUser?.name}'s profile:
-                </DialogDescription>
-            </DialogHeader>
-            {profileUser && (
-                <div className="flex items-center gap-3 py-4">
-                    <Image
-                        src={profileUser.avatar}
-                        alt={profileUser.name}
-                        width={48}
-                        height={48}
-                        className="rounded-full"
-                        unoptimized
-                    />
-                    <div>
-                        <p className="font-medium">{profileUser.name}</p>
-                        <p className="text-sm text-muted-foreground font-mono">{profileUser.uid}</p>
-                    </div>
-                </div>
-            )}
-            <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-2">
-                <div className="flex flex-col sm:flex-row gap-2">
-                    <Button
-                        variant="outline"
-                        onClick={() => profileUser && handleSteamProfile(profileUser.uid)}
-                    >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Open in Steam
-                    </Button>
-                    <Button
-                        onClick={() => profileUser && handleGrustProfile(profileUser.uid)}
-                    >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Open in gRust
-                    </Button>
-                </div>
-                <DialogClose asChild>
-                    <Button type="button" variant="secondary" className="hidden sm:flex">
-                        Close
-                    </Button>
-                </DialogClose>
-            </DialogFooter>
+          <DialogHeader className="text-left">
+            <DialogTitle>View Profile</DialogTitle>
+            <DialogDescription>
+              Choose where to view {profileUser?.name}'s profile:
+            </DialogDescription>
+          </DialogHeader>
+          {profileUser && (
+            <div className="flex items-center gap-3 py-4">
+              <Image
+                src={profileUser.avatar}
+                alt={profileUser.name}
+                width={48}
+                height={48}
+                className="rounded-full"
+                unoptimized
+              />
+              <div>
+                <p className="font-medium">{profileUser.name}</p>
+                <p className="text-sm text-muted-foreground font-mono">{profileUser.uid}</p>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="flex-col sm:flex-row sm:justify-between gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={() => profileUser && handleSteamProfile(profileUser.uid)}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Open in Steam
+              </Button>
+              <Button
+                onClick={() => profileUser && handleGrustProfile(profileUser.uid)}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Open in gRust
+              </Button>
+            </div>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary" className="hidden sm:flex">
+                Close
+              </Button>
+            </DialogClose>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <WarnsDialog
+        user={warnsUser}
+        isOpen={!!warnsUser}
+        onOpenChange={(isOpen) => !isOpen && setWarnsUser(null)}
+      />
+      <UserProfileDialog
+        uid={advancedInfoUser?.uid || null}
+        isOpen={!!advancedInfoUser}
+        onOpenChange={(isOpen) => !isOpen && setAdvancedInfoUser(null)}
+      />
     </div>
   )
 }

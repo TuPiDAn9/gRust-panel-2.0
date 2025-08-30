@@ -21,6 +21,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { WarnsDialog } from "@/components/user/warns-dialog"
+import { UserProfileDialog } from "@/components/user/user-profile-dialog"
 
 interface User {
   avatar: string
@@ -42,14 +44,12 @@ interface UserMenuProps {
   children: React.ReactNode
 }
 
-interface CurrentUser {
-  rank: string
-}
-
 export function UserMenu({ user, children }: UserMenuProps) {
   const { userInfo: currentUser } = useUser()
   const [viewProfileOpen, setViewProfileOpen] = useState(false)
-  
+  const [viewWarnsOpen, setViewWarnsOpen] = useState(false)
+  const [advancedInfoOpen, setAdvancedInfoOpen] = useState(false)
+
   const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
 
   const handleSteamProfile = () => {
@@ -67,11 +67,11 @@ export function UserMenu({ user, children }: UserMenuProps) {
         <Eye className="mr-2 h-4 w-4" />
         View Profile
       </ContextMenuItem>
-      <ContextMenuItem>
+      <ContextMenuItem onClick={() => setViewWarnsOpen(true)}>
         <AlertTriangle className="mr-2 h-4 w-4" />
-        View Warn
+        View Warns
       </ContextMenuItem>
-      <ContextMenuItem disabled>
+      <ContextMenuItem onClick={() => setAdvancedInfoOpen(true)}>
         <Settings className="mr-2 h-4 w-4" />
         Advanced Info
       </ContextMenuItem>
@@ -148,6 +148,18 @@ export function UserMenu({ user, children }: UserMenuProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <WarnsDialog
+        user={user}
+        isOpen={viewWarnsOpen}
+        onOpenChange={setViewWarnsOpen}
+      />
+
+      <UserProfileDialog
+        uid={user.uid}
+        isOpen={advancedInfoOpen}
+        onOpenChange={setAdvancedInfoOpen}
+      />
     </>
   )
 }
