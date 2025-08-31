@@ -54,18 +54,27 @@ export const ChartProvider = ({ children }: { children: React.ReactNode }) => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [days, setDays] = useState(7);
+  const [days, setDaysState] = useState(7);
 
   useEffect(() => {
     const savedChartType = localStorage.getItem('chartType') as ChartType;
     if (savedChartType) {
       setChartTypeState(savedChartType);
     }
+    const savedDays = localStorage.getItem('defaultDays');
+    if (savedDays) {
+      setDaysState(parseInt(savedDays, 10));
+    }
   }, []);
 
   const setChartType = (type: ChartType) => {
     setChartTypeState(type);
     localStorage.setItem('chartType', type);
+  };
+
+  const setDays = (newDays: number) => {
+    setDaysState(newDays);
+    localStorage.setItem('defaultDays', newDays.toString());
   };
 
   const fetchStats = useCallback(async (selectedDays?: number) => {

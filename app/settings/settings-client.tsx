@@ -11,12 +11,13 @@ import { Icons } from '@/components/icons';
 
 interface SettingsClientProps {
   initialJwt: string;
+  version: string;
 }
 
-export default function SettingsClient({ initialJwt }: SettingsClientProps) {
+export default function SettingsClient({ initialJwt, version }: SettingsClientProps) {
   const [jwt, setJwt] = useState(initialJwt);
   const [isJwtVisible, setIsJwtVisible] = useState(false);
-  const { chartType, setChartType } = useChart();
+  const { chartType, setChartType, days, setDays } = useChart();
 
   const handleSave = async () => {
     if (!jwt.trim()) {
@@ -87,7 +88,7 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="jwt">JWT Token</Label>
-                <div className="relative flex items-center">
+                <div className="relative">
                   <Input
                     id="jwt"
                     placeholder="Enter your JWT token"
@@ -99,7 +100,7 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="absolute right-2 h-7 w-7"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7"
                     onClick={() => setIsJwtVisible(!isJwtVisible)}
                   >
                     {isJwtVisible ? (
@@ -127,21 +128,41 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
             <CardDescription>Customize the appearance of your charts</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-2">
-              <Label>Chart Type</Label>
-              <Select
-                value={chartType}
-                onValueChange={(value) => setChartType(value as ChartType)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a chart type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="bar">Bar Chart</SelectItem>
-                  <SelectItem value="area">Area Chart</SelectItem>
-                  <SelectItem value="line">Line Chart</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid gap-4">
+              <div className="flex gap-4">
+                <div className="grid gap-2 w-full">
+                  <Label>Chart Type</Label>
+                  <Select
+                    value={chartType}
+                    onValueChange={(value) => setChartType(value as ChartType)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a chart type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="bar">Bar Chart</SelectItem>
+                      <SelectItem value="area">Area Chart</SelectItem>
+                      <SelectItem value="line">Line Chart</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2 w-full">
+                  <Label>Default Days</Label>
+                  <Select
+                    value={days.toString()}
+                    onValueChange={(value) => setDays(parseInt(value, 10))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select default days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="3">3 Days</SelectItem>
+                      <SelectItem value="5">5 Days</SelectItem>
+                      <SelectItem value="7">7 Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -151,10 +172,11 @@ export default function SettingsClient({ initialJwt }: SettingsClientProps) {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg md:text-xl">Information</CardTitle>
-            <CardDescription>gRust Panel 2.0</CardDescription>
+            <CardDescription>Panel version {version}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm md:text-base">This is a new and improved version of the gRust Panel.</p>
+            <p className="text-sm md:text-base">This is a new and improved version of the gRust Admin Panel.</p>
+            <p className="text-sm md:text-base">It has open source code on my <a href="https://github.com/TuPiDAn9/gRust-panel-2.0" target="_blank" rel="noopener noreferrer" className="text-primary underline">GitHub</a></p>
           </CardContent>
         </Card>
       </div>

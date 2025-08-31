@@ -1,5 +1,6 @@
 "use client"
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ExternalLink, Eye, AlertTriangle, Settings, Ban, Shield, Crown, OctagonAlert } from 'lucide-react'
 import { useUser } from '@/contexts/user-context'
 import Image from 'next/image'
@@ -24,6 +25,7 @@ import { Button } from "@/components/ui/button"
 import { WarnsDialog } from "@/components/user/warns-dialog"
 import { UserProfileDialog } from "@/components/user/user-profile-dialog"
 import { CreateWarnDialog } from "@/components/user/create-warn-dialog"
+import { CreateBanDialog } from "@/components/user/create-ban-dialog"
 
 interface User {
   avatar: string
@@ -46,11 +48,13 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, children }: UserMenuProps) {
+  const router = useRouter()
   const { userInfo: currentUser } = useUser()
   const [viewProfileOpen, setViewProfileOpen] = useState(false)
   const [viewWarnsOpen, setViewWarnsOpen] = useState(false)
   const [advancedInfoOpen, setAdvancedInfoOpen] = useState(false)
   const [createWarnOpen, setCreateWarnOpen] = useState(false)
+  const [createBanOpen, setCreateBanOpen] = useState(false)
 
   const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
 
@@ -78,16 +82,22 @@ export function UserMenu({ user, children }: UserMenuProps) {
         Advanced Info
       </ContextMenuItem>
       <ContextMenuSeparator />
-      <ContextMenuItem disabled>
+      <ContextMenuItem 
+        onClick={() => setCreateBanOpen(true)}
+        className={user.banned ? "text-green-500 focus:text-green-500" : "text-destructive focus:text-destructive"}
+      >
         {user.banned ? (
-          <Shield className="mr-2 h-4 w-4" />
+          <Shield className="mr-2 h-4 w-4 text-green-500" />
         ) : (
-          <Ban className="mr-2 h-4 w-4" />
+          <Ban className="mr-2 h-4 w-4 text-destructive" />
         )}
         {user.banned ? 'Unban' : 'Ban'}
       </ContextMenuItem>
-      <ContextMenuItem onClick={() => setCreateWarnOpen(true)}>
-        <OctagonAlert className="mr-2 h-4 w-4" />
+      <ContextMenuItem 
+        onClick={() => setCreateWarnOpen(true)}
+        className="text-orange-500 focus:text-orange-500"
+      >
+        <OctagonAlert className="mr-2 h-4 w-4 text-orange-500" />
         Warn
       </ContextMenuItem>
       {canSetRank && (
@@ -166,12 +176,22 @@ export function UserMenu({ user, children }: UserMenuProps) {
         isOpen={advancedInfoOpen}
         onOpenChange={setAdvancedInfoOpen}
       />
+
       <CreateWarnDialog
         user={user}
         isOpen={createWarnOpen}
         onOpenChange={setCreateWarnOpen}
         onWarnCreated={() => {
           setViewWarnsOpen(true)
+        }}
+      />
+
+      <CreateBanDialog
+        user={user}
+        isOpen={createBanOpen}
+        onOpenChange={setCreateBanOpen}
+        onBanCreated={() => {
+          router.refresh()
         }}
       />
     </>

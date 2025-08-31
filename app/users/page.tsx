@@ -36,6 +36,7 @@ import {
 import { UserMenu } from "@/components/user/user-menu"
 import { WarnsDialog } from "@/components/user/warns-dialog"
 import { CreateWarnDialog } from "@/components/user/create-warn-dialog"
+import { CreateBanDialog } from "@/components/user/create-ban-dialog"
 import { UserProfileDialog } from "@/components/user/user-profile-dialog"
 import { useUser } from '@/contexts/user-context'
 
@@ -137,6 +138,7 @@ export default function UsersPage() {
   const [warnsUser, setWarnsUser] = useState<User | null>(null)
   const [advancedInfoUser, setAdvancedInfoUser] = useState<User | null>(null)
   const [createWarnUser, setCreateWarnUser] = useState<User | null>(null)
+  const [createBanUser, setCreateBanUser] = useState<User | null>(null)
   const { userInfo: currentUser } = useUser()
 
   const canSetRank = currentUser?.rank === 'Staff Manager' || currentUser?.rank === 'Owner'
@@ -318,6 +320,7 @@ export default function UsersPage() {
                 value={searchInput}
                 onChange={(e) => handleSearch(e.target.value)}
                 className="pl-10"
+                showClearButton
               />
               {searchInput !== debouncedSearch && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -424,16 +427,25 @@ export default function UsersPage() {
                                 Advanced Info
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem disabled>
+                              <DropdownMenuItem 
+                                onClick={(e) => { 
+                                  e.stopPropagation(); 
+                                  setCreateBanUser(user); 
+                                }}
+                                className={user.banned ? "text-green-500 focus:text-green-500" : "text-destructive focus:text-destructive"}
+                              >
                                 {user.banned ? (
-                                  <Shield className="mr-2 h-4 w-4" />
+                                  <Shield className="mr-2 h-4 w-4 text-green-500" />
                                 ) : (
-                                  <Ban className="mr-2 h-4 w-4" />
+                                  <Ban className="mr-2 h-4 w-4 text-destructive" />
                                 )}
                                 {user.banned ? 'Unban' : 'Ban'}
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setCreateWarnUser(user); }}>
-                                <OctagonAlert className="mr-2 h-4 w-4" />
+                              <DropdownMenuItem 
+                                onClick={(e) => { e.stopPropagation(); setCreateWarnUser(user); }}
+                                className="text-orange-500 focus:text-orange-500"
+                              >
+                                <OctagonAlert className="mr-2 h-4 w-4 text-orange-500" />
                                 Warn
                               </DropdownMenuItem>
                               {canSetRank && (
@@ -449,8 +461,7 @@ export default function UsersPage() {
                               size="icon"
                               variant="outline"
                               className="h-7 w-7"
-                              disabled
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => { e.stopPropagation(); setCreateBanUser(user); }}
                             >
                               <Shield className="h-4 w-4 text-green-600" />
                             </Button>
@@ -459,8 +470,7 @@ export default function UsersPage() {
                               size="icon"
                               variant="outline"
                               className="h-7 w-7"
-                              disabled
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => { e.stopPropagation(); setCreateBanUser(user); }}
                             >
                               <Ban className="h-4 w-4 text-red-600" />
                             </Button>
@@ -481,7 +491,7 @@ export default function UsersPage() {
                   Total: {total.toLocaleString()} users
                 </p>
                 <div className="text-xs text-muted-foreground">
-                  {screenSize} | Showing: {limit}
+                  Showing: {limit}
                 </div>
               </div>
               <Pagination className="!mx-0 !w-auto !justify-end">
@@ -582,6 +592,14 @@ export default function UsersPage() {
         isOpen={!!createWarnUser}
         onOpenChange={(isOpen) => !isOpen && setCreateWarnUser(null)}
         onWarnCreated={() => {
+        }}
+      />
+      <CreateBanDialog
+        user={createBanUser}
+        isOpen={!!createBanUser}
+        onOpenChange={(isOpen) => !isOpen && setCreateBanUser(null)}
+        onBanCreated={() => {
+          fetchUsers(debouncedSearch, currentPage, limit)
         }}
       />
     </div>
