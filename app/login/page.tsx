@@ -67,6 +67,7 @@ export default function LoginPage() {
             onClick={handleSteamLogin}
             disabled={isLoading}
             size="lg"
+            data-umami-event="Log in"
           >
             {isLoading ? (
               <>

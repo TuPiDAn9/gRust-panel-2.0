@@ -140,6 +140,7 @@ export function JwtSetupModal({ isOpen, onValidToken }: JwtSetupModalProps) {
                       className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7"
                       onClick={() => setIsJwtVisible(!isJwtVisible)}
                       disabled={isLoading}
+                      data-umami-event="Setup JWT"
                     >
                       {isJwtVisible ? (
                         <Icons.eyeOff className="h-4 w-4" />

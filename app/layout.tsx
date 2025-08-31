@@ -12,6 +12,7 @@ import { UserProvider } from '@/contexts/user-context'
 import { JwtStatusProvider } from "@/components/jwt-status-provider";
 import { JwtGuard } from "@/components/jwt-guard";
 import { headers } from "next/headers";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -64,6 +65,7 @@ export default async function RootLayout({
             </JwtStatusProvider>
           </UserProvider>
         </SessionProviderWrapper>
+        <Script src="/script.js" data-website-id="c362f60a-8025-42a8-a758-9c0f7e33c2e1" />
       </body>
     </html>
   );

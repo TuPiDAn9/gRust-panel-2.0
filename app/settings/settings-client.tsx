@@ -112,10 +112,10 @@ export default function SettingsClient({ initialJwt, version }: SettingsClientPr
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row gap-2">
-                <Button onClick={handleSave} className="flex-1">Save</Button>
+                <Button onClick={handleSave} className="flex-1" data-umami-event="Saved JWT">Save</Button>
                 <Button onClick={handleClear} variant="outline" className="sm:w-auto">Clear</Button>
               </div>
-              <Button onClick={handleTestAPI} variant="ghost" className="w-full">
+              <Button onClick={handleTestAPI} variant="ghost" className="w-full" data-umami-event="Test JWT">
                 Test JWT
               </Button>
             </div>
