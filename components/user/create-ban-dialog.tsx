@@ -162,8 +162,8 @@ export function CreateBanDialog({ user, isOpen, onOpenChange, onBanCreated }: Cr
   }
 
   const isFormValid = (): boolean => {
-    const reasonValid = reason && (reason !== 'Custom' || customReason.trim())
-    const proofValid = proof.trim()
+    const reasonValid = reason.length > 0 && (reason !== 'Custom' || customReason.trim().length > 0)
+    const proofValid = proof.trim().length > 0
     const durationValid = banType === 'permanent' || calculateDuration() > 0
     return reasonValid && proofValid && durationValid
   }
@@ -177,7 +177,7 @@ export function CreateBanDialog({ user, isOpen, onOpenChange, onBanCreated }: Cr
   }
 
   const handleUnban = () => {
-    if (!unbanReason.trim()) {
+    if (unbanReason.trim().length === 0) {
       setError('Please provide a reason for the unban.')
       return
     }
@@ -486,7 +486,7 @@ export function CreateBanDialog({ user, isOpen, onOpenChange, onBanCreated }: Cr
             {user.banned ? (
               <Button
                 onClick={handleUnban}
-                disabled={isUnbanning || !unbanReason.trim()}
+                disabled={isUnbanning || unbanReason.trim().length === 0}
                 className="bg-green-500 hover:bg-green-600"
               >
                 {isUnbanning ? (

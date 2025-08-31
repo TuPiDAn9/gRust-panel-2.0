@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    console.log(`User with UID: ${uid} has been warned.`);
     return NextResponse.json({
       success: true,
       message: "Warn created successfully"

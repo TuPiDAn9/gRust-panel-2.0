@@ -1,6 +1,7 @@
 "use client"
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useJwtStatus } from '@/components/jwt-status-provider'
 
 interface UserInfo {
   avatar: string
@@ -31,12 +32,13 @@ const UserContext = createContext<UserContextType>({
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: session, status } = useSession()
+  const { isJwtValid } = useJwtStatus()
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (status === 'authenticated' && session && !userInfo && !loading) {
+    if (status === 'authenticated' && session && isJwtValid && !userInfo && !loading) {
       const fetchUserInfo = async () => {
         setLoading(true)
         setError(null)
@@ -59,11 +61,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       fetchUserInfo()
     }
     
-    if (status === 'unauthenticated') {
+    if (status === 'unauthenticated' || !isJwtValid) {
       setUserInfo(null)
       setError(null)
     }
-  }, [status, session, userInfo, loading])
+  }, [status, session, userInfo, loading, isJwtValid])
 
   return (
     <UserContext.Provider value={{ userInfo, loading, error }}>

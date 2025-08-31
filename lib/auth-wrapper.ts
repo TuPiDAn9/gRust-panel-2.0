@@ -23,6 +23,7 @@ export function authOptions(req?: NextRequest): AuthOptions {
     callbacks: {
       jwt({ token, account, profile }) {
         if (account?.provider === 'steam') {
+          console.log('User logged in successfully!')
           token.steam = profile
         }
         return token

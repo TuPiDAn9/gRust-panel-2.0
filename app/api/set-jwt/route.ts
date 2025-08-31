@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, 
     });
 
+    console.log('JWT token has been set/updated');
     return response;
   } catch (error) {
     return NextResponse.json({ error: "Failed to set JWT" }, { status: 500 });

@@ -44,8 +44,8 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <SessionProviderWrapper session={session}>
-          <UserProvider>
-            <JwtStatusProvider>
+          <JwtStatusProvider>
+            <UserProvider>
               <ChartProvider>
                 <ThemeProvider
                   attribute="class"
@@ -62,8 +62,8 @@ export default async function RootLayout({
                   <Toaster />
                 </ThemeProvider>
               </ChartProvider>
-            </JwtStatusProvider>
-          </UserProvider>
+            </UserProvider>
+          </JwtStatusProvider>
         </SessionProviderWrapper>
         <Script src="/script.js" data-website-id="c362f60a-8025-42a8-a758-9c0f7e33c2e1" />
       </body>

@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    console.log(`User with UID: ${uid} has been banned.`);
     return NextResponse.json({
       success: true,
       message: "Ban created successfully"
